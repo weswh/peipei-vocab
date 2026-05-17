@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>珮珮记单词</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Mobile hamburger -->
+  <button class="hamburger" id="hamburger" aria-label="菜单">☰</button>
+
+  <!-- Sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <nav class="sidebar" id="sidebar">
+    <button class="sidebar-close" id="sidebarClose">✕</button>
+    <div class="sidebar-brand">
+      <span class="brand-icon">📚</span>
+      <span class="brand-text">珮珮记单词</span>
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item">
+        <a href="#" class="nav-link active" data-view="dashboard"><span class="nav-icon">📊</span> 学习仪表盘</a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="study"><span class="nav-icon">📝</span> 学习单词</a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="review"><span class="nav-icon">🔄</span> 复习计划</a>
+      </li>
+      <li class="nav-item">
+        <a href="#" class="nav-link" data-view="wordlist"><span class="nav-icon">📖</span> 词汇列表</a>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      <label class="high-freq-toggle">
+        <input type="checkbox" id="highFreqOnly"><span>仅高频词</span>
+      </label>
+      <button class="dark-mode-btn" id="darkModeToggle" title="切换暗色模式">🌙</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ===== Dashboard ===== -->
+    <section class="view active" id="view-dashboard">
+      <header class="view-header"><h1>学习仪表盘</h1></header>
+      <div class="stats-grid">
+        <div class="stat-card today"><div class="stat-icon">📅</div><div class="stat-info"><span class="stat-num" id="statToday">0</span><span class="stat-label">今日学习</span></div></div>
+        <div class="stat-card mastered"><div class="stat-icon">✅</div><div class="stat-info"><span class="stat-num" id="statMastered">0</span><span class="stat-label">已掌握</span></div></div>
+        <div class="stat-card review"><div class="stat-icon">🔄</div><div class="stat-info"><span class="stat-num" id="statReview">0</span><span class="stat-label">待复习</span></div></div>
+        <div class="stat-card streak"><div class="stat-icon">🔥</div><div class="stat-info"><span class="stat-num" id="statStreak">0</span><span class="stat-label">连续天数</span></div></div>
+        <div class="stat-card total"><div class="stat-icon">📚</div><div class="stat-info"><span class="stat-num" id="statTotalWords">0</span><span class="stat-label">词汇总量</span></div></div>
+      </div>
+      <div class="section-card">
+        <h3>近30天学习热力图</h3>
+        <div class="heatmap" id="heatmap"></div>
+        <div class="heatmap-legend">
+          <span>少</span><span class="cell level-1"></span><span class="cell level-2"></span><span class="cell level-3"></span><span class="cell level-4"></span><span class="cell level-5"></span><span>多</span>
+        </div>
+      </div>
+      <div class="section-card">
+        <h3>各科目掌握情况 (L=听力 R=阅读 W=写作 S=口语)</h3>
+        <div class="subject-bars" id="subjectBars"></div>
+      </div>
+    </section>
+
+    <!-- ===== Study View ===== -->
+    <section class="view" id="view-study">
+      <header class="view-header">
+        <h1>学习单词</h1>
+        <div class="section-tabs" id="sectionTabs">
+          <button class="section-tab active" data-section="ielts">🎓 雅思词汇</button>
+          <button class="section-tab" data-section="cet6">📝 六级词汇</button>
+        </div>
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="flashcard">🎴 闪卡</button>
+          <button class="mode-tab" data-mode="spelling">✍️ 拼写测试</button>
+          <button class="mode-tab" data-mode="synonym">🔗 同义配对</button>
+        </div>
+      </header>
+
+      <div class="filter-bar">
+        <select id="filterFrequency" class="filter-select">
+          <option value="all">全部频率</option>
+          <option value="ultra">极高频</option>
+          <option value="high">高频</option>
+          <option value="medium">中频</option>
+          <option value="low">低频</option>
+        </select>
+        <select id="filterSubject" class="filter-select">
+          <option value="all">全部科目</option>
+          <option value="L">👂 听力 (Listening)</option>
+          <option value="R">📖 阅读 (Reading)</option>
+          <option value="W">✍️ 写作 (Writing)</option>
+          <option value="S">🗣️ 口语 (Speaking)</option>
+        </select>
+        <button class="btn btn-primary" id="btnNewWord">🎲 随机新词</button>
+      </div>
+
+      <!-- Flashcard -->
+      <div class="mode-content active" id="mode-flashcard">
+        <div class="flashcard-container">
+          <div class="flashcard" id="flashcard">
+            <div class="flashcard-front">
+              <span class="word-display" id="fcWord">word</span>
+              <span class="phonetic-display" id="fcPhonetic">/fəˈnetɪk/</span>
+              <span class="freq-display" id="fcFreq"></span>
+              <span class="hint-text">👆 点击翻转查看释义和例句</span>
+            </div>
+            <div class="flashcard-back">
+              <span class="meaning-display" id="fcMeaning">释义</span>
+              <div class="word-details" id="fcDetails"></div>
+              <div class="back-hint">👆 点击翻转回单词</div>
+            </div>
+          </div>
+        </div>
+        <div class="fc-actions">
+          <button class="fc-btn again" data-quality="0">😰 不认识</button>
+          <button class="fc-btn hard" data-quality="1">🤔 模糊</button>
+          <button class="fc-btn good" data-quality="2">😊 认识</button>
+        </div>
+        <div class="fc-speak"><button class="btn btn-sm" id="btnSpeakFlashcard">🔊 朗读发音</button></div>
+      </div>
+
+      <!-- Spelling -->
+      <div class="mode-content" id="mode-spelling">
+        <div class="spelling-container">
+          <div class="spelling-hint" id="spellMeaning">点击下方按钮听发音，然后拼写单词</div>
+          <div class="spelling-input-row">
+            <input type="text" class="spelling-input" id="spellInput" placeholder="输入单词拼写..." autocomplete="off" autocapitalize="off">
+            <button class="btn btn-primary" id="btnSpellCheck">确认</button>
+          </div>
+          <div class="spelling-actions">
+            <button class="btn" id="btnSpeakSpelling">🔊 再听一次</button>
+            <button class="btn" id="btnSpellHint">💡 提示</button>
+            <button class="btn" id="btnSpellSkip">⏭ 跳过</button>
+          </div>
+          <div class="spelling-result" id="spellResult"></div>
+        </div>
+      </div>
+
+      <!-- Synonym Match -->
+      <div class="mode-content" id="mode-synonym">
+        <div class="synonym-game" id="synonymGame">
+          <div class="syn-left" id="synLeft"></div>
+          <div class="syn-connector">⟷</div>
+          <div class="syn-right" id="synRight"></div>
+        </div>
+        <div class="syn-score">配对正确: <span id="synScore">0</span> / <span id="synTotal">5</span></div>
+        <button class="btn btn-primary" id="btnSynReset">🔄 新一轮</button>
+      </div>
+    </section>
+
+    <!-- ===== Review View ===== -->
+    <section class="view" id="view-review">
+      <header class="view-header"><h1>复习计划</h1></header>
+      <div class="review-stats">
+        <span>今日待复习: <strong id="reviewCount">0</strong> 个</span>
+        <span>本周待复习: <strong id="reviewWeekCount">0</strong> 个</span>
+      </div>
+      <div class="review-list" id="reviewList">
+        <p class="empty-hint">🎉 暂无需要复习的单词，去学习新词吧！</p>
+      </div>
+    </section>
+
+    <!-- ===== Word List View ===== -->
+    <section class="view" id="view-wordlist">
+      <header class="view-header"><h1>词汇列表</h1></header>
+      <div class="search-bar">
+        <input type="text" class="search-input" id="wordSearch" placeholder="搜索单词或释义...">
+        <select id="wlSection" class="filter-select">
+          <option value="all">全部板块</option>
+          <option value="ielts">雅思词汇</option>
+          <option value="cet6">六级词汇</option>
+        </select>
+        <select id="wlFilterFreq" class="filter-select">
+          <option value="all">全部频率</option>
+          <option value="ultra">极高频</option>
+          <option value="high">高频</option>
+          <option value="medium">中频</option>
+          <option value="low">低频</option>
+        </select>
+        <select id="wlFilterStatus" class="filter-select">
+          <option value="all">全部状态</option>
+          <option value="new">未学习</option>
+          <option value="learning">学习中</option>
+          <option value="mastered">已掌握</option>
+        </select>
+      </div>
+      <div class="word-table-wrap">
+        <table class="word-table">
+          <thead><tr><th>单词</th><th>音标</th><th>释义</th><th>板块</th><th>频率</th><th>状态</th></tr></thead>
+          <tbody id="wordTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="words.js"></script>
+  <script src="words-extra.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
