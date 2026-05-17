@@ -283,9 +283,11 @@ class App {
     card.addEventListener('click', () => {
       if (card.classList.contains('flipped')) {
         card.classList.remove('flipped');
+        this.resetFlashcardHeight();
       } else {
         card.classList.add('flipped');
         this.showWordDetails();
+        this.adjustFlashcardHeight();
       }
     });
 
@@ -351,6 +353,27 @@ class App {
     `;
   }
 
+  adjustFlashcardHeight() {
+    const card = document.getElementById('flashcard');
+    const back = card.querySelector('.flashcard-back');
+    if (!back) return;
+    const contentHeight = back.scrollHeight;
+    const winH = window.innerHeight;
+    // Cap at 80% of viewport height, min 420px
+    card.style.height = Math.min(contentHeight + 40, Math.round(winH * 0.8)) + 'px';
+    card.querySelectorAll('.flashcard-front, .flashcard-back').forEach(el => {
+      el.style.height = card.style.height;
+    });
+  }
+
+  resetFlashcardHeight() {
+    const card = document.getElementById('flashcard');
+    card.style.height = '';
+    card.querySelectorAll('.flashcard-front, .flashcard-back').forEach(el => {
+      el.style.height = '';
+    });
+  }
+
   rateWord(quality) {
     if (!this.currentWord) return;
     const key = this.currentWord.w;
@@ -361,6 +384,7 @@ class App {
     if (isNew) this.recordActivity('new');
     if (SM2.isMastered(card) && !isNew) this.recordActivity('mastered');
 
+    this.resetFlashcardHeight();
     document.getElementById('flashcard').classList.remove('flipped');
     setTimeout(() => {
       this.startFlashcard();
