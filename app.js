@@ -150,7 +150,8 @@ class App {
     if (this.darkMode) document.body.classList.add('dark');
     document.getElementById('darkModeToggle').textContent = this.darkMode ? '☀️' : '🌙';
     document.getElementById('highFreqOnly').checked = this.highFreqOnly;
-    this.bindNav();`n    this.bindMobile();
+    this.bindNav();
+    this.bindMobile();
     this.bindDarkMode();
     this.bindHighFreq();
     this.bindSectionTabs();
